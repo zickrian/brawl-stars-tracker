@@ -7,7 +7,9 @@ import {
     Medal, Target, Clock, Swords, ChevronRight,
     History, BarChart3, Shield, Award, AlertCircle
 } from 'lucide-react';
-import { fetchPlayer, getPlayerIconUrl, formatNumber, parseNameColor, getRankColor, getBrawlerImageUrl } from '@/lib/brawlstars-client';
+import { fetchPlayer, fetchPlayerBattlelog, getPlayerIconUrl, formatNumber, parseNameColor, getRankColor, getBrawlerImageUrl } from '@/lib/brawlstars-client';
+import { TrophyGraph } from '@/components/player/TrophyGraph';
+import { Battle } from '@/lib/types';
 
 function formatTime(seconds: number): string {
     const mins = Math.floor(seconds / 60);
@@ -27,10 +29,16 @@ export default async function PlayerPage({ params }: { params: Promise<{ tag: st
     const { tag } = await params;
 
     let player;
+    let battlelog: Battle[] = [];
     let error = null;
 
     try {
-        player = await fetchPlayer(tag);
+        const [playerData, battlelogData] = await Promise.all([
+            fetchPlayer(tag),
+            fetchPlayerBattlelog(tag).catch(() => ({ items: [] })) // Fail gracefully for battlelog
+        ]);
+        player = playerData;
+        battlelog = battlelogData.items || [];
     } catch (e) {
         error = e instanceof Error ? e.message : 'Failed to fetch player data';
     }
@@ -145,6 +153,15 @@ export default async function PlayerPage({ params }: { params: Promise<{ tag: st
                                     Highest: {formatNumber(player.highestTrophies)}
                                 </div>
                             </div>
+                        </div>
+
+                        {/* Trophy Graph */}
+                        <div className="mt-6 border-t border-slate-700/50 pt-6">
+                            <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                                <TrendingUp className="w-5 h-5 text-amber-400" />
+                                Recent Trophy Trend
+                            </h3>
+                            <TrophyGraph battlelog={battlelog} currentTrophies={player.trophies} />
                         </div>
                     </div>
 

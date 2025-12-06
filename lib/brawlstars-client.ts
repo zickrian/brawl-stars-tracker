@@ -232,7 +232,10 @@ export function getModeIconUrl(mode: string): string {
 }
 
 // Parse name color to CSS
-export function parseNameColor(colorCode: string): string {
+export function parseNameColor(colorCode: string | undefined): string {
+    // Return default color if no color code provided
+    if (!colorCode) return '#FFFFFF';
+
     // Color code format: "0xffff8afb" - ARGB format
     if (colorCode.startsWith('0x')) {
         const hex = colorCode.substring(4); // Remove "0xff" alpha

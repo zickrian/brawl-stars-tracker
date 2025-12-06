@@ -2,6 +2,7 @@
 
 import { Navbar } from '@/components/ui/Navbar';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
     Calendar, Clock, MapPin, Gamepad2, Timer,
     ChevronRight, Sparkles, RefreshCw, AlertCircle
@@ -21,23 +22,81 @@ interface ScheduledEvent {
     endTime: string;
 }
 
-// Mode colors and icons
-const modeStyles: Record<string, { color: string; icon: string }> = {
-    'gemGrab': { color: 'from-purple-500 to-pink-500', icon: '💎' },
-    'brawlBall': { color: 'from-blue-500 to-cyan-500', icon: '⚽' },
-    'heist': { color: 'from-orange-500 to-red-500', icon: '💰' },
-    'bounty': { color: 'from-amber-500 to-yellow-500', icon: '⭐' },
-    'siege': { color: 'from-indigo-500 to-purple-500', icon: '🏰' },
-    'hotZone': { color: 'from-green-500 to-emerald-500', icon: '🔥' },
-    'knockout': { color: 'from-red-500 to-rose-500', icon: '💥' },
-    'duels': { color: 'from-violet-500 to-purple-500', icon: '⚔️' },
-    'showdown': { color: 'from-gray-500 to-slate-500', icon: '💀' },
-    'soloShowdown': { color: 'from-gray-500 to-slate-500', icon: '💀' },
-    'duoShowdown': { color: 'from-teal-500 to-cyan-500', icon: '👥' },
-    'wipeout': { color: 'from-pink-500 to-rose-500', icon: '🎯' },
-    'payload': { color: 'from-sky-500 to-blue-500', icon: '📦' },
-    'default': { color: 'from-slate-500 to-gray-500', icon: '🎮' },
+// Mode colors - icons now come from CDN
+const modeStyles: Record<string, { color: string }> = {
+    'gemGrab': { color: 'from-purple-500 to-pink-500' },
+    'brawlBall': { color: 'from-blue-500 to-cyan-500' },
+    'heist': { color: 'from-orange-500 to-red-500' },
+    'bounty': { color: 'from-amber-500 to-yellow-500' },
+    'siege': { color: 'from-indigo-500 to-purple-500' },
+    'hotZone': { color: 'from-green-500 to-emerald-500' },
+    'knockout': { color: 'from-red-500 to-rose-500' },
+    'duels': { color: 'from-violet-500 to-purple-500' },
+    'showdown': { color: 'from-gray-500 to-slate-500' },
+    'soloShowdown': { color: 'from-gray-500 to-slate-500' },
+    'duoShowdown': { color: 'from-teal-500 to-cyan-500' },
+    'wipeout': { color: 'from-pink-500 to-rose-500' },
+    'payload': { color: 'from-sky-500 to-blue-500' },
+    'default': { color: 'from-slate-500 to-gray-500' },
 };
+
+// Get mode icon URL from Brawlify CDN
+function getModeIconUrl(mode: string): string {
+    // Extensive map for Brawlify CDN slug format
+    const modeMap: Record<string, string> = {
+        'gemGrab': 'Gem-Grab',
+        'brawlBall': 'Brawl-Ball',
+        'heist': 'Heist',
+        'bounty': 'Bounty',
+        'siege': 'Siege',
+        'hotZone': 'Hot-Zone',
+        'knockout': 'Knockout',
+        'duels': 'Duels',
+        'showdown': 'Showdown',
+        'soloShowdown': 'Solo-Showdown',
+        'duoShowdown': 'Duo-Showdown',
+        'wipeout': 'Wipeout',
+        'payload': 'Payload',
+        'takedown': 'Takedown',
+        'lonestar': 'Lone-Star',
+        'roboRumble': 'Robo-Rumble',
+        'bigGame': 'Big-Game',
+        'bossFight': 'Boss-Fight',
+        'trophyThieves': 'Trophy-Thieves',
+        'basketBrawl': 'Basket-Brawl',
+        'volleyBrawl': 'Volley-Brawl',
+        'hunters': 'Hunters',
+        'holdTheTrophy': 'Hold-The-Trophy',
+        'botDrop': 'Bot-Drop',
+        'snowtelThieves': 'Snowtel-Thieves',
+        'paintBrawl': 'Paint-Brawl',
+        'godzilla': 'Godzilla',
+        '5v5': '5v5',
+        'pumpkinPlunder': 'Pumpkin-Plunder',
+        'presentPlunder': 'Present-Plunder',
+        'graveGuardians': 'Grave-Guardians',
+        'jellyfishing': 'Jellyfishing',
+        'zombiePlunder': 'Zombie-Plunder',
+    };
+
+    // 1. Try exact map (safest)
+    if (modeMap[mode]) {
+        return `https://cdn.brawlify.com/gamemode/${modeMap[mode]}.png`;
+    }
+
+    // 2. Try simple camelCase -> Kebab-Case conversion (fallback)
+    // e.g. "gemGrab" -> "Gem-Grab"
+    let formattedMode = mode
+        .replace(/([A-Z])/g, '-$1') // insert dash before caps
+        .replace(/^-/, '');         // remove leading dash if any
+
+    // Capitalize first letter of each word (Brawlify convention: Gem-Grab)
+    formattedMode = formattedMode.split('-')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join('-');
+
+    return `https://cdn.brawlify.com/gamemode/${formattedMode}.png`;
+}
 
 function formatMode(mode: string): string {
     return mode
@@ -98,8 +157,14 @@ function EventCard({ event, isLive }: { event: ScheduledEvent; isLive: boolean }
             {/* Header with gradient */}
             <div className={`relative h-32 bg-gradient-to-br ${style.color} p-4`}>
                 {/* Mode Icon */}
-                <div className="absolute top-4 left-4 text-4xl">
-                    {style.icon}
+                <div className="absolute top-4 left-4 w-12 h-12">
+                    <Image
+                        src={getModeIconUrl(event.event.mode)}
+                        alt={formatMode(event.event.mode)}
+                        fill
+                        className="object-contain drop-shadow-lg"
+                        unoptimized
+                    />
                 </div>
 
                 {/* Countdown */}
@@ -272,8 +337,14 @@ export default function EventsPage() {
                                                         className="flex items-center gap-4 p-4 hover:bg-slate-800/30 transition-colors"
                                                     >
                                                         {/* Icon */}
-                                                        <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${style.color} flex items-center justify-center text-2xl`}>
-                                                            {style.icon}
+                                                        <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${style.color} flex items-center justify-center relative overflow-hidden`}>
+                                                            <Image
+                                                                src={getModeIconUrl(event.event.mode)}
+                                                                alt={formatMode(event.event.mode)}
+                                                                fill
+                                                                className="object-contain p-1.5"
+                                                                unoptimized
+                                                            />
                                                         </div>
 
                                                         {/* Info */}

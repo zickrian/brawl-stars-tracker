@@ -3,10 +3,11 @@ import {
   Trophy, Users, Swords, Calendar, GitCompare, TrendingUp,
   ArrowRight, Sparkles, Zap, Target, ChevronRight, Star
 } from 'lucide-react';
+import Image from 'next/image';
 import { SearchBar } from '@/components/ui/SearchBar';
 import { Navbar } from '@/components/ui/Navbar';
 
-// Feature card data
+// Feature card data with Official Brawl Stars Icons
 const features = [
   {
     icon: Trophy,
@@ -15,6 +16,7 @@ const features = [
     href: '/player',
     gradient: 'from-amber-500 to-orange-500',
     glowColor: 'rgba(251, 191, 36, 0.3)',
+    imageUrl: 'https://cdn.brawlify.com/profile-icons/regular/28000000.png', // Shelly Icon
   },
   {
     icon: Users,
@@ -23,6 +25,7 @@ const features = [
     href: '/club',
     gradient: 'from-cyan-500 to-blue-500',
     glowColor: 'rgba(34, 211, 238, 0.3)',
+    imageUrl: 'https://cdn.brawlify.com/club-badges/regular/8000000.png', // Generic Club Badge
   },
   {
     icon: Swords,
@@ -31,6 +34,7 @@ const features = [
     href: '/brawlers',
     gradient: 'from-purple-500 to-pink-500',
     glowColor: 'rgba(168, 85, 247, 0.3)',
+    imageUrl: 'https://cdn.brawlify.com/brawlers/borderless/16000000.png', // Shelly
   },
   {
     icon: Calendar,
@@ -39,6 +43,7 @@ const features = [
     href: '/events',
     gradient: 'from-green-500 to-emerald-500',
     glowColor: 'rgba(34, 197, 94, 0.3)',
+    imageUrl: 'https://cdn.brawlify.com/gamemode/Showdown.png', // Showdown Icon
   },
   {
     icon: TrendingUp,
@@ -47,6 +52,7 @@ const features = [
     href: '/leaderboards/players',
     gradient: 'from-red-500 to-rose-500',
     glowColor: 'rgba(239, 68, 68, 0.3)',
+    imageUrl: 'https://cdn.brawlify.com/rank/35.png', // Rank 35
   },
   {
     icon: GitCompare,
@@ -55,6 +61,7 @@ const features = [
     href: '/compare',
     gradient: 'from-indigo-500 to-violet-500',
     glowColor: 'rgba(99, 102, 241, 0.3)',
+    imageUrl: 'https://cdn.brawlify.com/gamemode/Duo-Showdown.png', // Duo Showdown (VS feel)
   },
 ];
 
@@ -179,17 +186,27 @@ export default async function Home() {
                 <Link
                   key={feature.title}
                   href={feature.href}
-                  className="group glass-card p-6 hover:border-slate-600/50 transition-all duration-300"
+                  className="group glass-card p-6 hover:border-slate-600/50 transition-all duration-300 relative overflow-hidden"
                   style={{
                     ['--glow-color' as string]: feature.glowColor,
                   }}
                 >
                   {/* Icon */}
                   <div
-                    className={`w-14 h-14 rounded-xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300`}
+                    className={`w-14 h-14 rounded-xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300 relative`}
                     style={{ boxShadow: `0 8px 24px ${feature.glowColor}` }}
                   >
-                    <Icon className="w-7 h-7 text-white" />
+                    {feature.imageUrl ? (
+                      <Image
+                        src={feature.imageUrl}
+                        alt={feature.title}
+                        fill
+                        className="object-contain p-2 drop-shadow-md"
+                        unoptimized
+                      />
+                    ) : (
+                      <Icon className="w-7 h-7 text-white" />
+                    )}
                   </div>
 
                   {/* Content */}
