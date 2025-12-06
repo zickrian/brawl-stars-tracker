@@ -225,37 +225,7 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-red-500/10" />
 
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-            <div className="glass-card p-8 sm:p-12 text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 mb-6 animate-pulse-glow">
-                <Zap className="w-8 h-8 text-white" />
-              </div>
-
-              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-                Start Tracking Now
-              </h2>
-              <p className="text-slate-400 max-w-xl mx-auto mb-8">
-                Enter your player tag above to see your complete statistics,
-                battlelog, and brawler collection
-              </p>
-
-              <div className="flex flex-wrap items-center justify-center gap-4">
-                <Link href="/leaderboards/players" className="btn btn-primary">
-                  <Trophy className="w-5 h-5" />
-                  View Leaderboards
-                </Link>
-                <Link href="/brawlers" className="btn btn-secondary">
-                  <Swords className="w-5 h-5" />
-                  Browse Brawlers
-                </Link>
-              </div>
-            </div>
-          </div>
-        </section>
 
         {/* Footer */}
         <footer className="border-t border-slate-800/50 bg-slate-900/30">

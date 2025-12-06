@@ -131,8 +131,13 @@ export default async function PlayerLeaderboardsPage({ searchParams }: PageProps
                     {/* Header */}
                     <div className="mb-8 animate-fade-in">
                         <div className="flex items-center gap-3 mb-4">
-                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/30">
-                                <Trophy className="w-6 h-6 text-white" />
+                            <div className="w-14 h-14 relative">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                    src="https://cdn-misc.brawlify.com/front/Star.svg"
+                                    alt="Leaderboards"
+                                    className="w-full h-full object-contain drop-shadow-xl"
+                                />
                             </div>
                             <div>
                                 <h1 className="text-3xl font-bold text-white">Player Leaderboards</h1>

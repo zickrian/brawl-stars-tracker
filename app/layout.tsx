@@ -1,12 +1,8 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  display: "swap",
-});
+
 
 export const metadata: Metadata = {
   title: {
@@ -52,11 +48,11 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <head>
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="icon" href="https://cdn-misc.brawlify.com/front/Star.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="https://cdn-misc.brawlify.com/front/Star.svg" />
         <meta name="theme-color" content="#0a0e17" />
       </head>
-      <body className={`${inter.variable} font-sans antialiased`}>
+      <body className="font-sans antialiased">
         {children}
       </body>
     </html>

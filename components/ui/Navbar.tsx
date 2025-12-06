@@ -39,11 +39,13 @@ export function Navbar() {
                 <div className="flex items-center justify-between h-16">
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-3 group">
-                        <div className="relative">
-                            <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-amber-500/30 transition-shadow">
-                                <Gamepad2 className="w-6 h-6 text-slate-900" />
-                            </div>
-                            <div className="absolute -inset-1 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl blur opacity-30 group-hover:opacity-50 transition-opacity -z-10" />
+                        <div className="relative w-8 h-8">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                                src="https://cdn-misc.brawlify.com/front/Star.svg"
+                                alt="Brawl Tracker"
+                                className="w-full h-full object-contain drop-shadow-lg group-hover:scale-110 transition-transform"
+                            />
                         </div>
                         <div className="hidden sm:block">
                             <span className="text-lg font-bold text-white">Brawl</span>

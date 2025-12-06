@@ -41,61 +41,29 @@ const modeStyles: Record<string, { color: string }> = {
 };
 
 // Get mode icon URL from Brawlify CDN
-function getModeIconUrl(mode: string): string {
-    // Extensive map for Brawlify CDN slug format
-    const modeMap: Record<string, string> = {
-        'gemGrab': 'Gem-Grab',
-        'brawlBall': 'Brawl-Ball',
-        'heist': 'Heist',
-        'bounty': 'Bounty',
-        'siege': 'Siege',
-        'hotZone': 'Hot-Zone',
-        'knockout': 'Knockout',
-        'duels': 'Duels',
-        'showdown': 'Showdown',
-        'soloShowdown': 'Solo-Showdown',
-        'duoShowdown': 'Duo-Showdown',
-        'wipeout': 'Wipeout',
-        'payload': 'Payload',
-        'takedown': 'Takedown',
-        'lonestar': 'Lone-Star',
-        'roboRumble': 'Robo-Rumble',
-        'bigGame': 'Big-Game',
-        'bossFight': 'Boss-Fight',
-        'trophyThieves': 'Trophy-Thieves',
-        'basketBrawl': 'Basket-Brawl',
-        'volleyBrawl': 'Volley-Brawl',
-        'hunters': 'Hunters',
-        'holdTheTrophy': 'Hold-The-Trophy',
-        'botDrop': 'Bot-Drop',
-        'snowtelThieves': 'Snowtel-Thieves',
-        'paintBrawl': 'Paint-Brawl',
-        'godzilla': 'Godzilla',
-        '5v5': '5v5',
-        'pumpkinPlunder': 'Pumpkin-Plunder',
-        'presentPlunder': 'Present-Plunder',
-        'graveGuardians': 'Grave-Guardians',
-        'jellyfishing': 'Jellyfishing',
-        'zombiePlunder': 'Zombie-Plunder',
-    };
-
-    // 1. Try exact map (safest)
-    if (modeMap[mode]) {
-        return `https://cdn.brawlify.com/gamemode/${modeMap[mode]}.png`;
+// Helper to determine folder for gamemode icon
+function getModeFolder(mode: string) {
+    if (mode.includes("solo") || mode.includes("duo") || mode === "showdown") {
+        return "showdown";
     }
 
-    // 2. Try simple camelCase -> Kebab-Case conversion (fallback)
-    // e.g. "gemGrab" -> "Gem-Grab"
-    let formattedMode = mode
-        .replace(/([A-Z])/g, '-$1') // insert dash before caps
-        .replace(/^-/, '');         // remove leading dash if any
+    const seasonal = [
+        "hunters", "takedown", "basketBrawl",
+        "volleyBrawl", "bossFight", "bigGame",
+        "roboRumble"
+    ];
+    if (seasonal.includes(mode)) return "seasonal";
 
-    // Capitalize first letter of each word (Brawlify convention: Gem-Grab)
-    formattedMode = formattedMode.split('-')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join('-');
+    return "regular";
+}
 
-    return `https://cdn.brawlify.com/gamemode/${formattedMode}.png`;
+function getGamemodeIcon(modeId: number, mode: string) {
+    const folder = getModeFolder(mode);
+    return `https://cdn.brawlify.com/game-modes/${folder}/${modeId}.png`;
+}
+
+function getMapIcon(mapId: number) {
+    return `https://cdn.brawlify.com/maps/regular/${mapId}.png`;
 }
 
 function formatMode(mode: string): string {
@@ -154,56 +122,72 @@ function EventCard({ event, isLive }: { event: ScheduledEvent; isLive: boolean }
 
     return (
         <div className="group glass-card overflow-hidden hover:border-slate-600/50 transition-all duration-300">
-            {/* Header with gradient */}
-            <div className={`relative h-32 bg-gradient-to-br ${style.color} p-4`}>
-                {/* Mode Icon */}
-                <div className="absolute top-4 left-4 w-12 h-12">
-                    <Image
-                        src={getModeIconUrl(event.event.mode)}
-                        alt={formatMode(event.event.mode)}
-                        fill
-                        className="object-contain drop-shadow-lg"
-                        unoptimized
-                    />
-                </div>
+            {/* Header with Map Background */}
+            <div className="relative h-32 overflow-hidden">
+                {/* Map Background - Full cover, brighter */}
+                <Image
+                    src={getMapIcon(event.event.id)}
+                    alt={event.event.map}
+                    fill
+                    className="object-cover brightness-100 group-hover:scale-105 transition-transform duration-500"
+                    unoptimized
+                />
+                {/* Subtle gradient overlay for text readability */}
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/70 via-transparent to-slate-900/30" />
 
-                {/* Countdown */}
-                <div className="absolute top-4 right-4 bg-black/30 backdrop-blur-sm rounded-lg px-3 py-1.5 flex items-center gap-2">
-                    <Timer className="w-4 h-4 text-white" />
-                    <span className="text-white font-bold text-sm">
-                        {hours}h {minutes}m
-                    </span>
-                </div>
-
-                {/* Modifiers */}
-                {event.event.modifiers && event.event.modifiers.length > 0 && (
-                    <div className="absolute bottom-4 left-4 flex gap-2 flex-wrap">
-                        {event.event.modifiers.map((mod) => (
-                            <span
-                                key={mod}
-                                className="bg-black/30 backdrop-blur-sm text-white text-xs font-medium px-2 py-1 rounded-full flex items-center gap-1"
-                            >
-                                <Sparkles className="w-3 h-3" />
-                                {mod}
+                {/* Content Layer */}
+                <div className="absolute inset-0 p-3 flex flex-col justify-between">
+                    {/* Top row - just countdown */}
+                    <div className="flex justify-end">
+                        <div className="bg-slate-900/90 backdrop-blur-sm rounded-lg px-3 py-1.5 flex items-center gap-2 border border-slate-700/50">
+                            <Timer className="w-4 h-4 text-cyan-400" />
+                            <span className="text-white font-bold text-sm">
+                                {hours}h {minutes}m
                             </span>
-                        ))}
+                        </div>
                     </div>
-                )}
+
+                    {/* Bottom row - Mode badge and modifiers */}
+                    <div className="flex items-end justify-between gap-2">
+                        {/* Mode name badge */}
+                        <div className={`bg-gradient-to-r ${style.color} px-3 py-1.5 rounded-lg shadow-lg`}>
+                            <span className="text-white font-bold text-sm drop-shadow-md">
+                                {formatMode(event.event.mode)}
+                            </span>
+                        </div>
+
+                        {/* Modifiers */}
+                        {event.event.modifiers && event.event.modifiers.length > 0 && (
+                            <div className="flex gap-1.5 flex-wrap justify-end">
+                                {event.event.modifiers.map((mod) => (
+                                    <span
+                                        key={mod}
+                                        className="bg-slate-900/90 backdrop-blur-sm text-white text-xs font-medium px-2 py-1 rounded-full flex items-center gap-1 border border-slate-700/50"
+                                    >
+                                        <Sparkles className="w-3 h-3 text-amber-400" />
+                                        {mod}
+                                    </span>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </div>
             </div>
 
             {/* Info */}
             <div className="p-4">
-                <h3 className="font-bold text-lg text-white mb-1">
+                <h3 className="font-bold text-lg text-white mb-1 leading-tight">
                     {formatMode(event.event.mode)}
                 </h3>
                 <div className="flex items-center gap-2 text-slate-400 text-sm">
-                    <MapPin className="w-4 h-4" />
-                    <span>{event.event.map}</span>
+                    <MapPin className="w-4 h-4 text-cyan-400" />
+                    <span className="truncate">{event.event.map}</span>
                 </div>
             </div>
         </div>
     );
 }
+
 
 export default function EventsPage() {
     const [events, setEvents] = useState<ScheduledEvent[]>([]);
@@ -252,9 +236,14 @@ export default function EventsPage() {
                     {/* Header */}
                     <div className="mb-8 animate-fade-in">
                         <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center shadow-lg shadow-green-500/30">
-                                    <Calendar className="w-6 h-6 text-white" />
+                            <div className="flex items-center gap-4">
+                                <div className="w-14 h-14 relative">
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                    <img
+                                        src="https://cdn-misc.brawlify.com/front/Star.svg"
+                                        alt="Events"
+                                        className="w-full h-full object-contain drop-shadow-xl"
+                                    />
                                 </div>
                                 <div>
                                     <h1 className="text-3xl font-bold text-white">Event Rotation</h1>
@@ -337,14 +326,8 @@ export default function EventsPage() {
                                                         className="flex items-center gap-4 p-4 hover:bg-slate-800/30 transition-colors"
                                                     >
                                                         {/* Icon */}
-                                                        <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${style.color} flex items-center justify-center relative overflow-hidden`}>
-                                                            <Image
-                                                                src={getModeIconUrl(event.event.mode)}
-                                                                alt={formatMode(event.event.mode)}
-                                                                fill
-                                                                className="object-contain p-1.5"
-                                                                unoptimized
-                                                            />
+                                                        <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${style.color} flex items-center justify-center shadow-lg`}>
+                                                            <Gamepad2 className="w-6 h-6 text-white" />
                                                         </div>
 
                                                         {/* Info */}
