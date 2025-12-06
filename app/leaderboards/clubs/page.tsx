@@ -173,7 +173,7 @@ export default async function ClubLeaderboardsPage({ searchParams }: PageProps) 
 
                                             {/* Club Info */}
                                             <div className="col-span-5 flex items-center gap-3 min-w-0">
-                                                <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-slate-800 flex-shrink-0">
+                                                <div className="relative w-10 h-10 flex-shrink-0">
                                                     <Image
                                                         src={getClubBadgeUrl(club.badgeId)}
                                                         alt={club.name}

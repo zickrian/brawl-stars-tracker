@@ -89,7 +89,7 @@ export default async function ClubPage({ params }: { params: Promise<{ tag: stri
                         <div className="flex flex-col sm:flex-row items-start gap-6">
                             {/* Club Badge */}
                             <div className="relative flex-shrink-0">
-                                <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl overflow-hidden bg-slate-800 ring-4 ring-cyan-500/30 flex items-center justify-center">
+                                <div className="w-24 h-24 sm:w-32 sm:h-32 flex items-center justify-center">
                                     <Image
                                         src={getClubBadgeUrl(club.badgeId)}
                                         alt={club.name}

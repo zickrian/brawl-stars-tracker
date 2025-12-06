@@ -40,14 +40,22 @@ export const decodeTag = (encodedTag: string): string => {
 };
 
 // Generic fetch helper with error handling
-async function fetchApi<T>(endpoint: string): Promise<T> {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+async function fetchApi<T>(endpoint: string, noCache: boolean = false): Promise<T> {
+    const fetchOptions: RequestInit & { next?: { revalidate: number } } = {
         headers: {
             Authorization: `Bearer ${getApiKey()}`,
             Accept: 'application/json',
         },
-        next: { revalidate: 300 }, // Cache for 5 minutes
-    });
+    };
+
+    // Use no-store cache for rankings to ensure fresh trophy data
+    if (noCache) {
+        fetchOptions.cache = 'no-store';
+    } else {
+        fetchOptions.next = { revalidate: 300 }; // Cache for 5 minutes
+    }
+
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, fetchOptions);
 
     if (!response.ok) {
         let errorMessage = `API Error: ${response.status} ${response.statusText}`;
@@ -106,22 +114,22 @@ export async function fetchClubMembers(tag: string): Promise<{ items: ClubMember
 // Ranking Endpoints
 // ============================================
 
-// Get player rankings
+// Get player rankings - always fetch fresh data to avoid stale trophy counts
 export async function fetchPlayerRankings(countryCode: string = 'global'): Promise<{ items: PlayerRanking[] }> {
-    return fetchApi<{ items: PlayerRanking[] }>(`/rankings/${countryCode}/players`);
+    return fetchApi<{ items: PlayerRanking[] }>(`/rankings/${countryCode}/players`, true);
 }
 
-// Get club rankings
+// Get club rankings - always fetch fresh data
 export async function fetchClubRankings(countryCode: string = 'global'): Promise<{ items: ClubRanking[] }> {
-    return fetchApi<{ items: ClubRanking[] }>(`/rankings/${countryCode}/clubs`);
+    return fetchApi<{ items: ClubRanking[] }>(`/rankings/${countryCode}/clubs`, true);
 }
 
-// Get brawler rankings
+// Get brawler rankings - always fetch fresh data
 export async function fetchBrawlerRankings(
     countryCode: string = 'global',
     brawlerId: number
 ): Promise<{ items: PlayerRanking[] }> {
-    return fetchApi<{ items: PlayerRanking[] }>(`/rankings/${countryCode}/brawlers/${brawlerId}`);
+    return fetchApi<{ items: PlayerRanking[] }>(`/rankings/${countryCode}/brawlers/${brawlerId}`, true);
 }
 
 // ============================================

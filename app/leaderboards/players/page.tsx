@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Trophy, Medal, Crown, ChevronRight, Globe, AlertCircle } from 'lucide-react';
-import { fetchPlayerRankings, getPlayerIconUrl, formatNumber, parseNameColor } from '@/lib/brawlstars-client';
+import { getPlayerIconUrl, formatNumber, parseNameColor, fetchPlayer } from '@/lib/brawlstars-client';
 
 export const metadata: Metadata = {
     title: 'Player Leaderboards',
@@ -36,6 +36,53 @@ function getRankIcon(rank: number) {
     return null;
 }
 
+// Fetch rankings with trophy enrichment for players with invalid data
+async function fetchEnrichedPlayerRankings(countryCode: string) {
+    const { fetchPlayerRankings } = await import('@/lib/brawlstars-client');
+    const response = await fetchPlayerRankings(countryCode);
+
+    if (!response.items || response.items.length === 0) {
+        return response;
+    }
+
+    // Check if trophy data seems invalid (top players should have 50k+ trophies)
+    const firstPlayerTrophies = response.items[0]?.trophies || 0;
+
+    // If trophies seem correct (> 10000 for top player), return as is
+    if (firstPlayerTrophies > 10000) {
+        return response;
+    }
+
+    console.log("Detected possibly invalid trophy data, enriching with player data...");
+
+    // Enrich first 50 players with actual trophy data
+    const enrichedItems = await Promise.all(
+        response.items.slice(0, 50).map(async (player: any) => {
+            try {
+                // Only fetch if trophies seem invalid
+                if (player.trophies < 10000) {
+                    const fullPlayer = await fetchPlayer(player.tag);
+                    return {
+                        ...player,
+                        trophies: fullPlayer.trophies,
+                    };
+                }
+                return player;
+            } catch (error) {
+                // If fetch fails, return original data
+                return player;
+            }
+        })
+    );
+
+    return {
+        items: [
+            ...enrichedItems,
+            ...response.items.slice(50),
+        ],
+    };
+}
+
 interface PageProps {
     searchParams: Promise<{ region?: string }>;
 }
@@ -47,7 +94,7 @@ export default async function PlayerLeaderboardsPage({ searchParams }: PageProps
     let error: string | null = null;
 
     try {
-        const response = await fetchPlayerRankings(region);
+        const response = await fetchEnrichedPlayerRankings(region);
         rankings = response.items;
     } catch (e) {
         error = e instanceof Error ? e.message : 'Failed to fetch leaderboard';
