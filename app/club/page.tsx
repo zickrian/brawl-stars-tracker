@@ -1,5 +1,6 @@
 import { Navbar } from '@/components/ui/Navbar';
 import { Metadata } from 'next';
+import Image from 'next/image';
 import { SearchBar } from '@/components/ui/SearchBar';
 import { Users, Search } from 'lucide-react';
 
@@ -15,8 +16,14 @@ export default function ClubSearchPage() {
             <main className="min-h-screen pt-24 pb-12 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-3xl mx-auto text-center">
                     <div className="glass-card p-12">
-                        <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center mx-auto mb-8 shadow-lg shadow-cyan-500/30">
-                            <Users className="w-10 h-10 text-white" />
+                        <div className="w-24 h-24 mx-auto mb-6 relative">
+                            <Image
+                                src="https://cdn-misc.brawlify.com/icon/Club.png"
+                                alt="Club Icon"
+                                fill
+                                className="object-contain drop-shadow-xl"
+                                unoptimized
+                            />
                         </div>
 
                         <h1 className="text-3xl sm:text-4xl font-bold text-white mb-4">

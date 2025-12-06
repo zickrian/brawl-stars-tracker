@@ -43,7 +43,7 @@ const features = [
     href: '/events',
     gradient: 'from-green-500 to-emerald-500',
     glowColor: 'rgba(34, 197, 94, 0.3)',
-    imageUrl: 'https://cdn.brawlify.com/gamemode/Showdown.png', // Showdown Icon
+    imageUrl: 'https://cdn-misc.brawlify.com/icon/Info-Round.png', // Info Icon
   },
   {
     icon: TrendingUp,
@@ -52,7 +52,7 @@ const features = [
     href: '/leaderboards/players',
     gradient: 'from-red-500 to-rose-500',
     glowColor: 'rgba(239, 68, 68, 0.3)',
-    imageUrl: 'https://cdn.brawlify.com/rank/35.png', // Rank 35
+    imageUrl: 'https://cdn-misc.brawlify.com/icon/Ranking.png', // Ranking Icon
   },
   {
     icon: GitCompare,
@@ -61,7 +61,7 @@ const features = [
     href: '/compare',
     gradient: 'from-indigo-500 to-violet-500',
     glowColor: 'rgba(99, 102, 241, 0.3)',
-    imageUrl: 'https://cdn.brawlify.com/gamemode/Duo-Showdown.png', // Duo Showdown (VS feel)
+    imageUrl: 'https://cdn-misc.brawlify.com/icon/trophy.png', // Trophy Icon
   },
 ];
 
@@ -192,20 +192,17 @@ export default async function Home() {
                   }}
                 >
                   {/* Icon */}
-                  <div
-                    className={`w-14 h-14 rounded-xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300 relative`}
-                    style={{ boxShadow: `0 8px 24px ${feature.glowColor}` }}
-                  >
+                  <div className="w-16 h-16 flex items-center justify-center mb-4 relative hover:scale-110 transition-transform duration-300">
                     {feature.imageUrl ? (
                       <Image
                         src={feature.imageUrl}
                         alt={feature.title}
                         fill
-                        className="object-contain p-2 drop-shadow-md"
+                        className="object-contain drop-shadow-xl"
                         unoptimized
                       />
                     ) : (
-                      <Icon className="w-7 h-7 text-white" />
+                      <Icon className="w-8 h-8 text-white" />
                     )}
                   </div>
 
